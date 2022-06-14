@@ -83,7 +83,6 @@ public class MaxGraphClient implements Closeable {
     private ClientGrpc.ClientBlockingStub stub;
     private ClientWriteGrpc.ClientWriteBlockingStub writeStub;
     private ClientBackupGrpc.ClientBackupBlockingStub backupStub;
-    private ManagedChannel channel;
     private String clientId = "DEFAULT";
 
     private BatchWriteRequest.Builder batchWriteBuilder;
@@ -179,12 +178,13 @@ public class MaxGraphClient implements Closeable {
         return GraphDef.parseProto(response.getGraphDef());
     }
 
-    public void commitDataLoad(Map<Long, DataLoadTarget> tableToTarget) {
+    public void commitDataLoad(Map<Long, DataLoadTarget> tableToTarget, String path) {
         CommitDataLoadRequest.Builder builder = CommitDataLoadRequest.newBuilder();
         tableToTarget.forEach(
                 (tableId, target) -> {
                     builder.putTableToTarget(tableId, target.toProto());
                 });
+        builder.setPath(path);
         CommitDataLoadResponse response = this.stub.commitDataLoad(builder.build());
     }
 

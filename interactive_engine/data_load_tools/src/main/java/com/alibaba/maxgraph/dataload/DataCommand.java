@@ -26,6 +26,7 @@ public abstract class DataCommand {
     protected String metaData;
     protected String username;
     protected String password;
+    protected String uniquePath;
 
     protected final String metaFileName = "META";
     protected final String OSS_ENDPOINT = "oss.endpoint";
@@ -88,6 +89,7 @@ public abstract class DataCommand {
                 objectMapper.readValue(
                         metaMap.get("mappings"),
                         new TypeReference<Map<String, ColumnMappingInfo>>() {});
+        this.uniquePath = metaMap.get("unique_path");
     }
 
     public abstract void run();
