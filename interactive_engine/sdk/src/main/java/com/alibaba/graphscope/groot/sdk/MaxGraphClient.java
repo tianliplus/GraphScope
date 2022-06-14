@@ -22,6 +22,7 @@ import com.alibaba.graphscope.proto.write.GetClientIdRequest;
 import com.alibaba.graphscope.proto.write.WriteRequestPb;
 import com.alibaba.graphscope.proto.write.WriteTypePb;
 import com.alibaba.maxgraph.compiler.api.schema.GraphSchema;
+import com.alibaba.maxgraph.proto.groot.ClearIngestRequest;
 import com.alibaba.maxgraph.proto.groot.ClientBackupGrpc;
 import com.alibaba.maxgraph.proto.groot.ClientBackupGrpc.ClientBackupBlockingStub;
 import com.alibaba.maxgraph.proto.groot.ClientGrpc;
@@ -74,7 +75,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class MaxGraphClient implements Closeable {
@@ -265,15 +265,12 @@ public class MaxGraphClient implements Closeable {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public void close() {
-        this.channel.shutdown();
-        try {
-            this.channel.awaitTermination(3000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            // Ignore
-        }
+    public void clearIngest() {
+        this.stub.clearIngest(ClearIngestRequest.newBuilder().build());
     }
+
+    @Override
+    public void close() {}
 
     public static MaxGraphClientBuilder newBuilder() {
         return new MaxGraphClientBuilder();

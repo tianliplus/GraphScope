@@ -29,10 +29,15 @@ import com.alibaba.maxgraph.common.util.ThreadFactoryUtils;
 import com.alibaba.maxgraph.compiler.api.exception.MaxGraphException;
 import com.alibaba.maxgraph.proto.groot.GraphDefPb;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -304,6 +309,17 @@ public class StoreService implements MetricsAgent {
             String fullPath = path + "/" + fileName;
             partition.ingestExternalFile(externalStorage, fullPath);
         }
+    }
+
+    public void clearIngest() throws IOException {
+        String dataRoot = StoreConfig.STORE_DATA_PATH.get(configs);
+        Path downloadPath = Paths.get(dataRoot, "download");
+        try {
+            FileUtils.forceDelete(downloadPath.toFile());
+        } catch (FileNotFoundException fnfe) {
+            // Ignore
+        }
+        Files.createDirectories(downloadPath);
     }
 
     public void garbageCollect(long snapshotId, CompletionCallback<Void> callback) {
